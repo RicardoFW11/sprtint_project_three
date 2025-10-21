@@ -12,13 +12,13 @@ from tensorflow.keras.preprocessing import image
 # TODO
 # Connect to Redis and assign to variable `db``
 # Make use of settings.py module to get Redis settings like host, port, etc.
-db = None
+db = redis.Redis(host=settings.REDIS_IP, port=settings.REDIS_PORT, db=settings.REDIS_DB_ID)
 
 # TODO
 # Load your ML model and assign to variable `model`
 # See https://drive.google.com/file/d/1ADuBSE4z2ZVIdn66YDSwxKv-58U7WEOn/view?usp=sharing
 # for more information about how to use this model.
-model = None
+model = ResNet50(include_top=True, weights="imagenet")
 
 
 def predict(image_name):
@@ -42,13 +42,20 @@ def predict(image_name):
     # TODO: Implement the code to predict the class of the image_name
 
     # Load image
+    img = image.load_img(os.path.join(settings.UPLOAD_FOLDER, image_name), target_size=(224, 224))
 
     # Apply preprocessing (convert to numpy array, match model input dimensions (including batch) and use the resnet50 preprocessing)
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = preprocess_input(img_array)
 
     # Get predictions using model methods and decode predictions using resnet50 decode_predictions
-    _, class_name, pred_probability = None
+    predictions = model.predict(img_array)
+    decoded_predictions = decode_predictions(predictions, top=1)[0]
+    _, class_name, pred_probability = decoded_predictions[0]
 
     # Convert probabilities to float and round it
+    pred_probability = float(pred_probability)
 
     return class_name, pred_probability
 
