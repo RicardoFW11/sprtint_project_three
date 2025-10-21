@@ -6,9 +6,12 @@ FROM python:3.8.13
 # 3. Copy the content of the current directory to the image
 # 4. Run the populate_db.py script
 
+# Set working directory for better organization
+WORKDIR /src
+
 # Install dependencies
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy the content of the current directory to the image
 COPY . .
