@@ -21,6 +21,11 @@ def allowed_file(filename):
     # TODO: Implement the allowed_file function
     # Current implementation will return True for any file
     # Check if the file extension of the filename received is in the set of allowed extensions (".png", ".jpg", ".jpeg", ".gif")
+    
+    allowed_extensions = {".png", ".jpg", ".jpeg", ".gif"}
+
+    if not any(filename.endswith(ext) for ext in allowed_extensions):
+        return False
 
     return True
 
@@ -45,9 +50,14 @@ async def get_file_hash(file):
     # Current implementation will return the original file name.
 
     # Read file content and generate md5 hash (Check: https://docs.python.org/3/library/hashlib.html#hashlib.md5)
+    file_content = await file.read()
+    md5_hash = hashlib.md5(file_content).hexdigest()
 
     # Return file pointer to the beginning
+    file.seek(0)
 
     # Add original file extension
+    file_extension = os.path.splitext(file.filename)[1]
+    new_filename = md5_hash + file_extension
 
-    return file.filename
+    return new_filename
