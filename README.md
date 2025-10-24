@@ -124,6 +124,7 @@ Run:
 ```bash
 $ cd api/
 $ docker build -t fastapi_test --progress=plain --target test .
+$ docker build -t fastapi_test --progress=plain --target test --no-cache .
 ```
 
 You will only need to pay attention to the logs corresponding to the testing code which will look like this:
