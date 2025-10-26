@@ -31,20 +31,32 @@ def login(username: str, password: str) -> Optional[str]:
     #  7. Return the token if login is successful, otherwise return `None`.
     #  8. Test the function with various inputs.
 
-    return None
+    headers = {
+        "accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+    data = {
+        "grant_type": "",
+        "username": username,
+        "password": password,
+        "scope": "",
+        "client_id": "",
+        "client_secret": "",
+    }
+
+    request = requests.post(f"{API_BASE_URL}/login", headers=headers, data=data)
+
+    try:
+        if request.status_code == 200:
+            return request.json()["access_token"]
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error logging in: {e}")
+        return None
 
 
 def predict(token: str, uploaded_file: Image) -> requests.Response:
-    """This function calls the predict endpoint of the API to classify the uploaded
-    image.
-
-    Args:
-        token (str): token to authenticate the user
-        uploaded_file (Image): image to classify
-
-    Returns:
-        requests.Response: response from the API
-    """
     # TODO: Implement the predict function
     # Steps to Build the `predict` Function:
     #  1. Create a dictionary with the file data. The file should be a
@@ -52,9 +64,22 @@ def predict(token: str, uploaded_file: Image) -> requests.Response:
     #  2. Add the token to the headers.
     #  3. Make a POST request to the predict endpoint.
     #  4. Return the response.
-    response = None
 
-    return response
+    # Reset file pointer to the beginning
+    uploaded_file.seek(0)
+
+    files = {"file": (uploaded_file.name, uploaded_file.getvalue())}
+    headers = {"Authorization": f"Bearer {token}"}
+
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}/model/predict", headers=headers, files=files
+        )
+
+        return response
+    except requests.exceptions.RequestException as e:
+        print(f"Error predicting: {e}")
+        return None
 
 
 def send_feedback(
@@ -80,9 +105,22 @@ def send_feedback(
     # 2. Add the token to the headers.
     # 3. Make a POST request to the feedback endpoint.
     # 4. Return the response.
-    response = None
 
-    return response
+    data = {
+        "feedback": feedback,
+        "score": score,
+        "predicted_class": prediction,
+        "image_file_name": image_file_name,
+    }
+    headers = {"Authorization": f"Bearer {token}"}
+
+    try:
+        response = requests.post(f"{API_BASE_URL}/feedback", headers=headers, json=data)
+
+        return response
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending feedback: {e}")
+        return None
 
 
 # Interfaz de usuario
