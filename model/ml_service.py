@@ -97,21 +97,22 @@ def classify_process():
         # Take a new job from Redis
         job_data = db.brpop(settings.REDIS_QUEUE, timeout=1)
 
-        # Decode the JSON data for the given job
-        job_data = json.loads(job_data[1])
+        if job_data is not None:
+            # Decode the JSON data for the given job
+            job_info = json.loads(job_data[1])
 
-        # Important! Get and keep the original job ID
-        job_id = job_data["id"]
+            # Important! Get and keep the original job ID
+            job_id = job_info["id"]
 
-        # Run the loaded ml model (use the predict() function)
-        class_name, pred_probability = predict(job_data["image_name"])
+            # Run the loaded ml model (use the predict() function)
+            class_name, pred_probability = predict(job_info["image_name"])
 
-        # Prepare a new JSON with the results
-        result = {"prediction": class_name, "score": pred_probability}
+            # Prepare a new JSON with the results
+            result = {"prediction": class_name, "score": pred_probability}
 
-        # Store the job results on Redis using the original
-        # job ID as the key
-        db.set(job_id, json.dumps(result))
+            # Store the job results on Redis using the original
+            # job ID as the key
+            db.set(job_id, json.dumps(result))
 
         # Sleep for a bit
         time.sleep(settings.SERVER_SLEEP)

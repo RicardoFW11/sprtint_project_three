@@ -48,6 +48,13 @@ class APIUser(HttpUser):
     # See https://docs.locust.io/en/stable/writing-a-locustfile.html for help.
     # TODO
     # raise NotImplementedError
+    
+    @task(3)
+    def index(self):
+        response = self.client.get("/docs")
+        if response.status_code != 200:
+            print(f"Index endpoint failed: {response.status_code}")
+
     @task(1)
     def predict(self):
         token = login("admin@example.com", "admin")
