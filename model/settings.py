@@ -16,3 +16,9 @@ REDIS_IP = os.getenv("REDIS_IP", "redis")
 # Sleep parameters which manages the
 # interval between requests to our redis queue
 SERVER_SLEEP = 0.05
+
+# BATCH PROCESSING CONFIGURATION (Optional Part 3)
+# Maximum number of images to process in a single batch
+BATCH_SIZE = int(os.getenv("BATCH_SIZE", "4"))
+# Maximum time (seconds) to wait for collecting a batch
+BATCH_TIMEOUT = float(os.getenv("BATCH_TIMEOUT", "2.0"))

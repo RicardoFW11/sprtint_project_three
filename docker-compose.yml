@@ -52,6 +52,11 @@ services:
       - redis
     volumes:
       - ./uploads:/src/uploads
+    environment:
+      # Set to 'true' to enable batch processing (Optional Part 3)
+      USE_BATCH_PROCESSING: ${USE_BATCH_PROCESSING:-false}
+      BATCH_SIZE: ${BATCH_SIZE:-4}
+      BATCH_TIMEOUT: ${BATCH_TIMEOUT:-2.0}
     networks:
       - shared_network
 
